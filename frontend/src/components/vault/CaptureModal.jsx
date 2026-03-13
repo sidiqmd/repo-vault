@@ -2,7 +2,7 @@ import { useState } from "react";
 import { F } from "../../theme";
 import { api } from "../../services/api";
 
-export default function CaptureModal({ T, onClose, onAdd, onUpdateRepo, isGuest, initialUrl = "" }) {
+export default function CaptureModal({ T, onClose, onAdd, onUpdateRepo, initialUrl = "" }) {
   const [url, setUrl] = useState(initialUrl);
   const [error, setError] = useState("");
 

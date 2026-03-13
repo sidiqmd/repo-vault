@@ -30,7 +30,6 @@ const DEFAULT_CONFIG = {
 
 export default function VaultApp({ T, dark, setDark, user, isGuest, storage, onLogout, onLogin }) {
   const [repos, setRepos] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [config, setConfig] = useLocalStorage("rv_settings", DEFAULT_CONFIG);
   const [search, setSearch] = useState("");
   const [fCat, setFCat] = useState("all");
@@ -49,8 +48,10 @@ export default function VaultApp({ T, dark, setDark, user, isGuest, storage, onL
     const params = new URLSearchParams(window.location.search);
     const shared = params.get("shared_url") || params.get("url") || "";
     if (shared && shared.includes("github.com")) {
-      setSharedUrl(shared);
-      setShowCap(true);
+      setTimeout(() => {
+        setSharedUrl(shared);
+        setShowCap(true);
+      }, 0);
       // Clean URL without reloading
       window.history.replaceState({}, "", window.location.pathname);
     }
@@ -60,7 +61,6 @@ export default function VaultApp({ T, dark, setDark, user, isGuest, storage, onL
   const seededRef = useRef(false);
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
     storage.getRepos().then(data => {
       if (cancelled) return;
       // If guest with no saved repos, seed with demo data (once)
@@ -71,12 +71,11 @@ export default function VaultApp({ T, dark, setDark, user, isGuest, storage, onL
       } else {
         setRepos(data || []);
       }
-      setLoading(false);
     }).catch(() => {
-      if (!cancelled) { setRepos([]); setLoading(false); }
+      if (!cancelled) { setRepos([]); }
     });
     return () => { cancelled = true; };
-  }, [storage]);
+  }, [storage, isGuest]);
 
   // When settings change defaultView/defaultSort, sync the active state
   const handleConfigChange = (newConfig) => {

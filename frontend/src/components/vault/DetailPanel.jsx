@@ -4,7 +4,7 @@ import { CATEGORIES, STATUSES, TAG_PRESETS } from "../../constants";
 import { fmt, ago, langColor } from "../../utils";
 import Spark from "../common/Spark";
 
-export default function DetailPanel({ T, sel, setSel, repos, onUpdateRepo, onDeleteRepo }) {
+export default function DetailPanel({ T, sel, setSel, repos, onUpdateRepo }) {
   const [tab, setTab] = useState("overview");
   const [notes, setNotes] = useState(sel.notes || "");
   const [status, setStatus] = useState(sel.status);
@@ -17,9 +17,11 @@ export default function DetailPanel({ T, sel, setSel, repos, onUpdateRepo, onDel
   const selIdRef = useRef(sel.id);
   useEffect(() => {
     selIdRef.current = sel.id;
-    setNotes(sel.notes || ""); setStatus(sel.status); setCategory(sel.category);
-    setRating(sel.rating || 0); setTags(sel.tags || []); setShowNotes(!!sel.notes); setTab("overview");
-  }, [sel.id]);
+    setTimeout(() => {
+      setNotes(sel.notes || ""); setStatus(sel.status); setCategory(sel.category);
+      setRating(sel.rating || 0); setTags(sel.tags || []); setShowNotes(!!sel.notes); setTab("overview");
+    }, 0);
+  }, [sel]);
 
   const saveToRepos = useCallback((overrides = {}) => {
     const updates = { ...overrides, readAt: sel.readAt || new Date().toISOString() };

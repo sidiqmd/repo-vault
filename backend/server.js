@@ -50,14 +50,15 @@ app.use('/api/settings', settingsRoutes);
 app.use('/api/enrich', enrichRoutes);
 
 // Health check — pings MongoDB to verify connectivity
-app.get('/health', async (req, res) => {
+const healthCheck = async (req, res) => {
   try {
     await mongoose.connection.db.admin().ping();
     res.json({ ok: true });
-  } catch {
+  } catch (err) {
     res.status(503).json({ ok: false, error: 'Database unavailable' });
   }
-});
+};
+app.get('/api/health', healthCheck);
 
 // Global error handler — prevents unhandled rejections from crashing the server
 app.use((err, req, res, _next) => {

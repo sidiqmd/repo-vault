@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
 const P = {
   bg:"#1A1816",surface:"#242220",surfHov:"#2E2B28",bdr:"#3D3835",bdrLt:"#332F2C",
@@ -392,18 +392,37 @@ function AuthPage({T,onLogin,onSkip}) {
   );
 }
 
-// ── Settings Page ──
-function SettingsPage({T,onClose}) {
-  const [config, setConfig] = useState({
-    defaultView:"grid",cardDensity:"default",autoFetch:true,aiSummary:true,
-    snapshotReadme:true,autoCategory:true,staleAlert:true,weeklyDigest:false,
-    releaseAlert:false,defaultSort:"savedAt",exportFormat:"json",ghSync:false,obsidian:false,
-  });
-  const Toggle=({checked,onChange})=>(<button onClick={()=>onChange(!checked)} style={{width:40,height:22,borderRadius:11,border:"none",cursor:"pointer",background:checked?T.acc:T.bdr,position:"relative",transition:"background 0.2s",padding:2,display:"flex",alignItems:"center"}}><div style={{width:18,height:18,borderRadius:"50%",background:T.surface,transition:"transform 0.2s",transform:checked?"translateX(18px)":"translateX(0)",boxShadow:"0 1px 3px rgba(0,0,0,0.15)"}}/></button>);
-  const Sel=({value,onChange,options})=>(<select value={value} onChange={e=>onChange(e.target.value)} style={{padding:"5px 8px",borderRadius:6,border:`1.5px solid ${T.bdr}`,background:T.bg,color:T.ink,fontSize:"12px",fontFamily:F.body,outline:"none",cursor:"pointer"}}>{options.map(o=><option key={o.v} value={o.v}>{o.l}</option>)}</select>);
-  const Row=({label,desc,children})=>(<div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"9px 0",borderBottom:`1px solid ${T.bdrLt}`}}><div style={{flex:1}}><p style={{fontSize:"13px",color:T.ink,fontFamily:F.body,marginBottom:1}}>{label}</p>{desc&&<p style={{fontSize:"11px",color:T.inkF,fontFamily:F.body}}>{desc}</p>}</div><div style={{flexShrink:0,marginLeft:12}}>{children}</div></div>);
-  const Sec=({title,children})=>(<div style={{marginBottom:22}}><h3 style={{fontFamily:F.body,fontSize:"13px",fontWeight:700,color:T.ink,marginBottom:8,paddingBottom:6,borderBottom:`1px solid ${T.bdrLt}`}}>{title}</h3>{children}</div>);
+const Toggle = ({ checked, onChange, T }) => (
+  <button onClick={() => onChange(!checked)} style={{ width: 40, height: 22, borderRadius: 11, border: "none", cursor: "pointer", background: checked ? T.acc : T.bdr, position: "relative", transition: "background 0.2s", padding: 2, display: "flex", alignItems: "center" }}>
+    <div style={{ width: 18, height: 18, borderRadius: "50%", background: T.surface, transition: "transform 0.2s", transform: checked ? "translateX(18px)" : "translateX(0)", boxShadow: "0 1px 3px rgba(0,0,0,0.15)" }} />
+  </button>
+);
 
+const Sel = ({ value, onChange, options, T }) => (
+  <select value={value} onChange={e => onChange(e.target.value)} style={{ padding: "5px 8px", borderRadius: 6, border: `1.5px solid ${T.bdr}`, background: T.bg, color: T.ink, fontSize: "12px", fontFamily: F.body, outline: "none", cursor: "pointer" }}>
+    {options.map(o => <option key={o.v} value={o.v}>{o.l}</option>)}
+  </select>
+);
+
+const Row = ({ label, desc, children, T }) => (
+  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 0", borderBottom: `1px solid ${T.bdrLt}` }}>
+    <div style={{ flex: 1 }}>
+      <p style={{ fontSize: "13px", color: T.ink, fontFamily: F.body, marginBottom: 1 }}>{label}</p>
+      {desc && <p style={{ fontSize: "11px", color: T.inkF, fontFamily: F.body }}>{desc}</p>}
+    </div>
+    <div style={{ flexShrink: 0, marginLeft: 12 }}>{children}</div>
+  </div>
+);
+
+const Sec = ({ title, children, T }) => (
+  <div style={{ marginBottom: 22 }}>
+    <h3 style={{ fontFamily: F.body, fontSize: "13px", fontWeight: 700, color: T.ink, marginBottom: 8, paddingBottom: 6, borderBottom: `1px solid ${T.bdrLt}` }}>{title}</h3>
+    {children}
+  </div>
+);
+
+// ── Settings Page ──
+function SettingsPage({T, dark, setDark, config, setConfig, onClose}) {
   return (
     <div onClick={onClose} style={{position:"fixed",inset:0,zIndex:1200,background:T.overlayHeavy,backdropFilter:"blur(4px)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
       <div onClick={e=>e.stopPropagation()} style={{background:T.surface,borderRadius:16,width:"100%",maxWidth:500,maxHeight:"85vh",boxShadow:T.modalShadow,display:"flex",flexDirection:"column",overflow:"hidden"}}>
@@ -414,28 +433,29 @@ function SettingsPage({T,onClose}) {
             onMouseLeave={e=>e.currentTarget.style.background=T.bg}>✕</button>
         </div>
         <div style={{padding:"16px 24px 24px",overflowY:"auto",flex:1}}>
-          <Sec title="Appearance">
-            <Row label="Default view"><Sel value={config.defaultView} onChange={v=>setConfig({...config,defaultView:v})} options={[{v:"grid",l:"Grid"},{v:"list",l:"List"},{v:"kanban",l:"Kanban"}]}/></Row>
-            <Row label="Card density"><Sel value={config.cardDensity} onChange={v=>setConfig({...config,cardDensity:v})} options={[{v:"compact",l:"Compact"},{v:"default",l:"Default"},{v:"expanded",l:"Expanded"}]}/></Row>
+          <Sec title="Appearance" T={T}>
+            {setDark && <Row label="Theme" desc={dark ? "Dark mode" : "Light mode"} T={T}><Toggle checked={dark} onChange={v => setDark(v)} T={T} /></Row>}
+            <Row label="Default view" T={T}><Sel value={config.defaultView} onChange={v=>setConfig({...config,defaultView:v})} options={[{v:"grid",l:"Grid"},{v:"list",l:"List"},{v:"kanban",l:"Kanban"}]} T={T} /></Row>
+            <Row label="Card density" T={T}><Sel value={config.cardDensity} onChange={v=>setConfig({...config,cardDensity:v})} options={[{v:"compact",l:"Compact"},{v:"default",l:"Default"},{v:"expanded",l:"Expanded"}]} T={T} /></Row>
           </Sec>
-          <Sec title="Enrichment">
-            <Row label="Auto-fetch metadata" desc="Stars, forks, language on save"><Toggle checked={config.autoFetch} onChange={v=>setConfig({...config,autoFetch:v})}/></Row>
-            <Row label="AI summaries"><Toggle checked={config.aiSummary} onChange={v=>setConfig({...config,aiSummary:v})}/></Row>
-            <Row label="Snapshot README"><Toggle checked={config.snapshotReadme} onChange={v=>setConfig({...config,snapshotReadme:v})}/></Row>
-            <Row label="Auto-categorize"><Toggle checked={config.autoCategory} onChange={v=>setConfig({...config,autoCategory:v})}/></Row>
+          <Sec title="Enrichment" T={T}>
+            <Row label="Auto-fetch metadata" desc="Stars, forks, language on save" T={T}><Toggle checked={config.autoFetch} onChange={v=>setConfig({...config,autoFetch:v})} T={T} /></Row>
+            <Row label="AI summaries" T={T}><Toggle checked={config.aiSummary} onChange={v=>setConfig({...config,aiSummary:v})} T={T}/></Row>
+            <Row label="Snapshot README" T={T}><Toggle checked={config.snapshotReadme} onChange={v=>setConfig({...config,snapshotReadme:v})} T={T} /></Row>
+            <Row label="Auto-categorize" T={T}><Toggle checked={config.autoCategory} onChange={v=>setConfig({...config,autoCategory:v})} T={T} /></Row>
           </Sec>
-          <Sec title="Notifications">
-            <Row label="Stale repo alerts" desc="No commits in 6+ months"><Toggle checked={config.staleAlert} onChange={v=>setConfig({...config,staleAlert:v})}/></Row>
-            <Row label="Weekly digest"><Toggle checked={config.weeklyDigest} onChange={v=>setConfig({...config,weeklyDigest:v})}/></Row>
-            <Row label="Release alerts"><Toggle checked={config.releaseAlert} onChange={v=>setConfig({...config,releaseAlert:v})}/></Row>
+          <Sec title="Notifications" T={T}>
+            <Row label="Stale repo alerts" desc="No commits in 6+ months" T={T}><Toggle checked={config.staleAlert} onChange={v=>setConfig({...config,staleAlert:v})} T={T} /></Row>
+            <Row label="Weekly digest" T={T}><Toggle checked={config.weeklyDigest} onChange={v=>setConfig({...config,weeklyDigest:v})} T={T}/></Row>
+            <Row label="Release alerts" T={T}><Toggle checked={config.releaseAlert} onChange={v=>setConfig({...config,releaseAlert:v})} T={T}/></Row>
           </Sec>
-          <Sec title="Data & Export">
-            <Row label="Default sort"><Sel value={config.defaultSort} onChange={v=>setConfig({...config,defaultSort:v})} options={[{v:"savedAt",l:"Recent"},{v:"stars",l:"Stars"},{v:"name",l:"Name"}]}/></Row>
-            <Row label="Export format"><Sel value={config.exportFormat} onChange={v=>setConfig({...config,exportFormat:v})} options={[{v:"json",l:"JSON"},{v:"csv",l:"CSV"},{v:"markdown",l:"Markdown"}]}/></Row>
+          <Sec title="Data & Export" T={T}>
+            <Row label="Default sort" T={T}><Sel value={config.defaultSort} onChange={v=>setConfig({...config,defaultSort:v})} options={[{v:"savedAt",l:"Recent"},{v:"stars",l:"Stars"},{v:"name",l:"Name"}]} T={T} /></Row>
+            <Row label="Export format" T={T}><Sel value={config.exportFormat} onChange={v=>setConfig({...config,exportFormat:v})} options={[{v:"json",l:"JSON"},{v:"csv",l:"CSV"},{v:"markdown",l:"Markdown"}]} T={T} /></Row>
           </Sec>
-          <Sec title="Integrations">
-            <Row label="GitHub stars sync"><Toggle checked={config.ghSync} onChange={v=>setConfig({...config,ghSync:v})}/></Row>
-            <Row label="Obsidian export"><Toggle checked={config.obsidian} onChange={v=>setConfig({...config,obsidian:v})}/></Row>
+          <Sec title="Integrations" T={T}>
+            <Row label="GitHub stars sync" T={T}><Toggle checked={config.ghSync} onChange={v=>setConfig({...config,ghSync:v})} T={T}/></Row>
+            <Row label="Obsidian export" T={T}><Toggle checked={config.obsidian} onChange={v=>setConfig({...config,obsidian:v})} T={T} /></Row>
           </Sec>
           <div style={{padding:12,borderRadius:8,border:"1px solid #EF444433",background:"#EF444408",marginTop:4}}>
             <p style={{fontSize:"12px",fontWeight:600,color:"#EF4444",fontFamily:F.body,marginBottom:6}}>Danger Zone</p>
@@ -720,14 +740,27 @@ function DetailPanel({T,sel,setSel,repos,setRepos}) {
   const [showNotes,setShowNotes]=useState(!!sel.notes);
   const TAG_PRESETS=["weekend-project","work","reference","urgent","experimental","stable","lightweight"];
 
-  useEffect(()=>{setNotes(sel.notes||"");setStatus(sel.status);setCategory(sel.category);setRating(sel.rating||0);setTags(sel.tags||[]);setShowNotes(!!sel.notes);setTab("overview");},[sel.id]);
+  useEffect(() => {
+    setTimeout(() => {
+      setNotes(sel.notes||"");
+      setStatus(sel.status);
+      setCategory(sel.category);
+      setRating(sel.rating||0);
+      setTags(sel.tags||[]);
+      setShowNotes(!!sel.notes);
+      setTab("overview");
+    }, 0);
+  }, [sel.id]);
 
-  const saveToRepos=(overrides={})=>{
+  const saveToRepos = useCallback((overrides={})=>{
     const u={...sel,...overrides,readAt:sel.readAt||new Date().toISOString()};
     setRepos(p=>p.map(r=>r.id===u.id?u:r));
-  };
-  const mounted=useRef(false);
-  useEffect(()=>{if(!mounted.current){mounted.current=true;return;}saveToRepos({status,category,rating,tags});},[status,category,rating,tags]);
+  }, [sel, setRepos]);
+  const mounted = useRef(false);
+  useEffect(() => {
+    if (!mounted.current) { mounted.current = true; return; }
+    saveToRepos({status, category, rating, tags});
+  }, [status, category, rating, tags, saveToRepos]);
   const saveNotes=()=>saveToRepos({notes,status,category,rating,tags});
 
   const cat=CATEGORIES.find(c=>c.id===category);
@@ -747,7 +780,7 @@ function DetailPanel({T,sel,setSel,repos,setRepos}) {
   // Simple README
   const readmeText=`# ${sel.name}\n\n${sel.aiSummary}\n\n## Quick Start\n\nRefer to the GitHub repository for installation instructions and documentation.\n\n## Links\n\n- Repository: github.com/${sel.owner}/${sel.name}\n- License: ${sel.license}\n- Stars: ${fmt(sel.stars)}`;
 
-  const tabBtn=(id,label)=>({padding:"7px 14px",borderRadius:"6px 6px 0 0",border:"none",cursor:"pointer",fontSize:"13px",fontWeight:tab===id?600:400,fontFamily:F.body,background:tab===id?`${T.acc}18`:"transparent",color:tab===id?T.acc:T.inkF,borderBottom:tab===id?`2px solid ${T.acc}`:"2px solid transparent",transition:"all 0.15s",paddingBottom:9});
+  const tabBtn=(id)=>({padding:"7px 14px",borderRadius:"6px 6px 0 0",border:"none",cursor:"pointer",fontSize:"13px",fontWeight:tab===id?600:400,fontFamily:F.body,background:tab===id?`${T.acc}18`:"transparent",color:tab===id?T.acc:T.inkF,borderBottom:tab===id?`2px solid ${T.acc}`:"2px solid transparent",transition:"all 0.15s",paddingBottom:9});
 
   return (
     <div onClick={()=>setSel(null)} style={{position:"fixed",inset:0,zIndex:1000,background:T.overlay,backdropFilter:"blur(3px)",display:"flex",justifyContent:"flex-end"}}>

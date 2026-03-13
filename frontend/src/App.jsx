@@ -34,9 +34,9 @@ export default function App() {
   // Auto-navigate to vault when signed in
   useEffect(() => {
     if (isSignedIn && page !== "vault") {
-      setPage("vault");
+      setTimeout(() => setPage("vault"), 0);
     }
-  }, [isSignedIn]);
+  }, [isSignedIn, page]);
 
   // Storage service (switches between localStorage and API)
   const storage = useMemo(
