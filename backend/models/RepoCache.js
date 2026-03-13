@@ -24,10 +24,10 @@ const repoCacheSchema = new mongoose.Schema({
 // One cache entry per repo
 repoCacheSchema.index({ owner: 1, name: 1 }, { unique: true });
 
-// Configurable freshness via CACHE_TTL_HOURS env var (default: 24)
+// Configurable freshness via CACHE_TTL_HOURS env var (default: 4320)
 repoCacheSchema.methods.isFresh = function (maxAgeMs) {
   if (maxAgeMs == null) {
-    const hours = parseFloat(process.env.CACHE_TTL_HOURS) || 24;
+    const hours = parseFloat(process.env.CACHE_TTL_HOURS) || 4320;
     maxAgeMs = hours * 60 * 60 * 1000;
   }
   return this.fetchedAt && (Date.now() - this.fetchedAt.getTime()) < maxAgeMs;
