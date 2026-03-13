@@ -73,6 +73,7 @@ export default function CaptureModal({ T, onClose, onAdd, onUpdateRepo, initialU
           lastCommit: d.lastCommit || "",
           topics: d.topics || [],
           sparkline: d.sparkline || [],
+          readme: d.readme || "",
           aiSummary: d.aiSummary || d.description || "",
           category: d.aiCategory || "uncategorized",
           _enriching: false,

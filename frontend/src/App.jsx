@@ -38,6 +38,13 @@ export default function App() {
     }
   }, [isSignedIn, page]);
 
+  // Redirect to landing when signed out and not in guest mode
+  useEffect(() => {
+    if (!isPending && !isSignedIn && !guestMode && page === "vault") {
+      setPage("landing");
+    }
+  }, [isPending, isSignedIn, guestMode, page]);
+
   // Storage service (switches between localStorage and API)
   const storage = useMemo(
     () => createStorageService(isGuest),
@@ -64,8 +71,8 @@ export default function App() {
     setPage("vault");
   };
 
-  // Show nothing while checking session
-  if (isPending && page === "landing") {
+  // Show nothing only on initial load while checking session
+  if (isPending && page === "landing" && !guestMode) {
     return null;
   }
 

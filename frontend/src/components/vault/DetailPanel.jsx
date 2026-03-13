@@ -47,7 +47,64 @@ export default function DetailPanel({ T, sel, setSel, repos, onUpdateRepo }) {
   const nextSt = stIdx < STATUSES.length - 1 ? STATUSES[stIdx + 1] : null;
   const prevSt = stIdx > 0 ? STATUSES[stIdx - 1] : null;
 
-  const readmeText = `# ${sel.name}\n\n${sel.aiSummary}\n\n## Quick Start\n\nRefer to the GitHub repository for installation instructions and documentation.\n\n## Links\n\n- Repository: github.com/${sel.owner}/${sel.name}\n- License: ${sel.license}\n- Stars: ${fmt(sel.stars)}`;
+  const readmeText = sel.readme || `# ${sel.name}\n\n${sel.aiSummary}\n\n## Quick Start\n\nRefer to the GitHub repository for installation instructions and documentation.\n\n## Links\n\n- Repository: github.com/${sel.owner}/${sel.name}\n- License: ${sel.license}\n- Stars: ${fmt(sel.stars)}`;
+
+  // Simple markdown line renderer
+  const renderLine = (line, i) => {
+    if (line.startsWith("### ")) return <h3 key={i} style={{ fontFamily: F.display, fontSize: "15px", fontWeight: 600, color: T.ink, margin: "12px 0 4px" }}>{line.slice(4)}</h3>;
+    if (line.startsWith("## ")) return <h2 key={i} style={{ fontFamily: F.display, fontSize: "18px", fontWeight: 400, color: T.ink, margin: "14px 0 4px", borderBottom: `1px solid ${T.bdrLt}`, paddingBottom: 6 }}>{line.slice(3)}</h2>;
+    if (line.startsWith("# ")) return <h1 key={i} style={{ fontFamily: F.display, fontSize: "22px", fontWeight: 400, color: T.ink, margin: "16px 0 6px" }}>{line.slice(2)}</h1>;
+    if (line.startsWith("- ") || line.startsWith("* ")) return <li key={i} style={{ fontSize: "13px", color: T.inkM, fontFamily: F.body, lineHeight: 1.6, marginLeft: 16, marginBottom: 2 }}>{renderInline(line.slice(2))}</li>;
+    if (line.trim() === "") return <div key={i} style={{ height: 6 }} />;
+    return <p key={i} style={{ fontSize: "13px", color: T.inkM, fontFamily: F.body, lineHeight: 1.6, margin: "3px 0" }}>{renderInline(line)}</p>;
+  };
+
+  // Inline markdown: bold, code, links
+  const renderInline = (text) => {
+    const parts = [];
+    let remaining = text;
+    let key = 0;
+    const regex = /(\*\*(.+?)\*\*|`([^`]+)`|\[([^\]]+)\]\(([^)]+)\))/g;
+    let lastIndex = 0;
+    let match;
+    while ((match = regex.exec(text)) !== null) {
+      if (match.index > lastIndex) parts.push(<span key={key++}>{text.slice(lastIndex, match.index)}</span>);
+      if (match[2]) parts.push(<strong key={key++} style={{ fontWeight: 600, color: T.ink }}>{match[2]}</strong>);
+      else if (match[3]) parts.push(<code key={key++} style={{ padding: "1px 4px", borderRadius: 3, background: T.bg, border: `1px solid ${T.bdr}`, fontSize: "12px", fontFamily: F.mono }}>{match[3]}</code>);
+      else if (match[4] && match[5]) parts.push(<a key={key++} href={match[5]} target="_blank" rel="noopener noreferrer" style={{ color: T.acc, textDecoration: "none" }}>{match[4]}</a>);
+      lastIndex = match.index + match[0].length;
+    }
+    if (lastIndex < text.length) parts.push(<span key={key++}>{text.slice(lastIndex)}</span>);
+    return parts.length ? parts : text;
+  };
+
+  // Process readme into lines, handling code blocks
+  const renderReadme = (text) => {
+    const lines = text.split("\n");
+    const elements = [];
+    let inCode = false;
+    let codeLines = [];
+    let codeLang = "";
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].startsWith("```") && !inCode) {
+        inCode = true;
+        codeLang = lines[i].slice(3).trim();
+        codeLines = [];
+      } else if (lines[i].startsWith("```") && inCode) {
+        inCode = false;
+        elements.push(
+          <pre key={`code-${i}`} style={{ background: T.bg, border: `1px solid ${T.bdr}`, borderRadius: 6, padding: "10px 12px", overflow: "auto", margin: "6px 0" }}>
+            <code style={{ fontSize: "12px", fontFamily: F.mono, color: T.inkM, lineHeight: 1.5 }}>{codeLines.join("\n")}</code>
+          </pre>
+        );
+      } else if (inCode) {
+        codeLines.push(lines[i]);
+      } else {
+        elements.push(renderLine(lines[i], i));
+      }
+    }
+    return elements;
+  };
 
   const tabBtn = (id) => ({ padding: "7px 14px", borderRadius: "6px 6px 0 0", border: "none", cursor: "pointer", fontSize: "13px", fontWeight: tab === id ? 600 : 400, fontFamily: F.body, background: tab === id ? `${T.acc}18` : "transparent", color: tab === id ? T.acc : T.inkF, borderBottom: tab === id ? `2px solid ${T.acc}` : "2px solid transparent", transition: "all 0.15s", paddingBottom: 9 });
 
@@ -190,13 +247,7 @@ export default function DetailPanel({ T, sel, setSel, repos, onUpdateRepo }) {
               <a href={`https://github.com/${sel.owner}/${sel.name}#readme`} target="_blank" rel="noopener noreferrer" style={{ fontSize: "11px", color: T.acc, textDecoration: "none", fontFamily: F.mono }}>View on GitHub {"\u2197"}</a>
             </div>
             <div style={{ background: T.bg, border: `1px solid ${T.bdrLt}`, borderRadius: 8, padding: "16px 18px" }}>
-              {readmeText.split("\n").map((line, i) => {
-                if (line.startsWith("# ")) return <h1 key={i} style={{ fontFamily: F.display, fontSize: "22px", fontWeight: 400, color: T.ink, margin: "16px 0 6px" }}>{line.slice(2)}</h1>;
-                if (line.startsWith("## ")) return <h2 key={i} style={{ fontFamily: F.display, fontSize: "18px", fontWeight: 400, color: T.ink, margin: "14px 0 4px", borderBottom: `1px solid ${T.bdrLt}`, paddingBottom: 6 }}>{line.slice(3)}</h2>;
-                if (line.startsWith("- ")) return <li key={i} style={{ fontSize: "13px", color: T.inkM, fontFamily: F.body, lineHeight: 1.6, marginLeft: 16, marginBottom: 2 }}>{line.slice(2)}</li>;
-                if (line.trim() === "") return <div key={i} style={{ height: 6 }} />;
-                return <p key={i} style={{ fontSize: "13px", color: T.inkM, fontFamily: F.body, lineHeight: 1.6, margin: "3px 0" }}>{line}</p>;
-              })}
+              {renderReadme(readmeText)}
             </div>
           </div>)}
         </div>
