@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#1A1816"/>
+  <rect x="24" y="24" width="464" height="464" rx="80" fill="#242220" stroke="#3D3835" stroke-width="2"/>
+  <!-- Vault door -->
+  <circle cx="256" cy="240" r="120" fill="none" stroke="#E8723A" stroke-width="8"/>
+  <circle cx="256" cy="240" r="80" fill="none" stroke="#E8723A" stroke-width="4" opacity="0.5"/>
+  <circle cx="256" cy="240" r="16" fill="#E8723A"/>
+  <!-- Handle -->
+  <line x1="256" y1="240" x2="256" y2="160" stroke="#E8723A" stroke-width="6" stroke-linecap="round"/>
+  <line x1="256" y1="240" x2="320" y2="240" stroke="#E8723A" stroke-width="6" stroke-linecap="round"/>
+  <!-- Text -->
+  <text x="256" y="420" text-anchor="middle" font-family="Georgia, serif" font-size="56" fill="#F0EDE8" font-weight="400">
+    <tspan>Repo</tspan><tspan fill="#E8723A" font-style="italic">Vault</tspan>
+  </text>
+</svg>

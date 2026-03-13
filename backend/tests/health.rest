@@ -1,0 +1,18 @@
+### ============================================
+### Health & Auth — basic connectivity tests
+### ============================================
+
+@base = http://localhost:5050
+
+
+### ─── Health check (no auth needed) ───
+
+GET {{base}}/health
+
+### ─── Auth session check ───
+### Returns user info if cookie is valid
+
+@cookie = better-auth.session_token=PASTE_YOUR_TOKEN_HERE
+
+GET {{base}}/api/auth/get-session
+Cookie: {{cookie}}

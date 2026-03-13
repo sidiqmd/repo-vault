@@ -1,0 +1,197 @@
+### ============================================
+### Repos API — /api/repos
+### See AUTH.md for how to get a session cookie.
+### Replace {{cookie}} with your session token.
+### ============================================
+
+@base = http://localhost:5050
+@cookie = better-auth.session_token=PASTE_YOUR_TOKEN_HERE
+
+
+### ─── GET all repos ───
+
+GET {{base}}/api/repos
+Cookie: {{cookie}}
+
+### ─── GET with search ───
+
+GET {{base}}/api/repos?search=react
+Cookie: {{cookie}}
+
+### ─── GET with filters ───
+
+GET {{base}}/api/repos?status=inbox&category=ai-ml&sort=stars
+Cookie: {{cookie}}
+
+### ─── POST create repo (valid) ───
+
+POST {{base}}/api/repos
+Cookie: {{cookie}}
+Content-Type: application/json
+
+{
+  "url": "https://github.com/facebook/react",
+  "name": "react",
+  "owner": "facebook",
+  "description": "A JavaScript library for building user interfaces",
+  "stars": 220000,
+  "forks": 45000,
+  "language": "JavaScript",
+  "status": "inbox",
+  "category": "libraries",
+  "tags": ["frontend", "ui"],
+  "sparkline": [10, 15, 12, 18, 14, 20, 16, 22]
+}
+
+### ─── POST create repo (minimal) ───
+
+POST {{base}}/api/repos
+Cookie: {{cookie}}
+Content-Type: application/json
+
+{
+  "url": "https://github.com/vercel/next.js",
+  "name": "next.js",
+  "owner": "vercel"
+}
+
+### ─── PATCH update repo ───
+### Replace {{repoId}} with an actual _id from GET /api/repos
+
+@repoId = PASTE_REPO_ID_HERE
+
+PATCH {{base}}/api/repos/{{repoId}}
+Cookie: {{cookie}}
+Content-Type: application/json
+
+{
+  "status": "reviewed",
+  "rating": 5,
+  "notes": "Great library, using in production"
+}
+
+### ─── DELETE repo ───
+
+DELETE {{base}}/api/repos/{{repoId}}
+Cookie: {{cookie}}
+
+### ─── POST bulk import ───
+
+POST {{base}}/api/repos/bulk
+Cookie: {{cookie}}
+Content-Type: application/json
+
+{
+  "repos": [
+    {
+      "url": "https://github.com/tailwindlabs/tailwindcss",
+      "name": "tailwindcss",
+      "owner": "tailwindlabs",
+      "stars": 80000,
+      "language": "CSS"
+    },
+    {
+      "url": "https://github.com/vitejs/vite",
+      "name": "vite",
+      "owner": "vitejs",
+      "stars": 65000,
+      "language": "TypeScript"
+    }
+  ]
+}
+
+### ─── GET cache ───
+
+GET {{base}}/api/repos/cache/facebook/react
+Cookie: {{cookie}}
+
+### ─── PUT cache ───
+
+PUT {{base}}/api/repos/cache/facebook/react
+Cookie: {{cookie}}
+Content-Type: application/json
+
+{
+  "stars": 220001,
+  "aiSummary": "React is a declarative UI library."
+}
+
+
+### ============================================
+### VALIDATION TESTS — expect 400 errors
+### ============================================
+
+### ─── Invalid URL (javascript: XSS) ───
+
+POST {{base}}/api/repos
+Cookie: {{cookie}}
+Content-Type: application/json
+
+{
+  "url": "javascript:alert(1)",
+  "name": "xss",
+  "owner": "evil"
+}
+
+### ─── Invalid status ───
+
+POST {{base}}/api/repos
+Cookie: {{cookie}}
+Content-Type: application/json
+
+{
+  "url": "https://github.com/test/test",
+  "name": "test",
+  "owner": "test",
+  "status": "hacked"
+}
+
+### ─── Negative stars ───
+
+POST {{base}}/api/repos
+Cookie: {{cookie}}
+Content-Type: application/json
+
+{
+  "url": "https://github.com/test/test2",
+  "name": "test2",
+  "owner": "test",
+  "stars": -999
+}
+
+### ─── Rating out of range ───
+
+PATCH {{base}}/api/repos/{{repoId}}
+Cookie: {{cookie}}
+Content-Type: application/json
+
+{
+  "rating": 99
+}
+
+### ─── Object injection in tags ───
+
+POST {{base}}/api/repos
+Cookie: {{cookie}}
+Content-Type: application/json
+
+{
+  "url": "https://github.com/test/inject",
+  "name": "inject",
+  "owner": "test",
+  "tags": ["ok", {"$gt": ""}]
+}
+
+### ─── Invalid ObjectId ───
+
+PATCH {{base}}/api/repos/not-a-valid-id
+Cookie: {{cookie}}
+Content-Type: application/json
+
+{
+  "notes": "test"
+}
+
+### ─── No auth (expect 401) ───
+
+GET {{base}}/api/repos

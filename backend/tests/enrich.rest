@@ -1,0 +1,131 @@
+### ============================================
+### Enrich API — /api/enrich
+### See AUTH.md for how to get a session cookie.
+### ============================================
+
+@base = http://localhost:5050
+@cookie = better-auth.session_token=PASTE_YOUR_TOKEN_HERE
+
+
+### ─── POST /enrich/github (guest — no auth) ───
+### Works without auth. Uses web scraping for guests.
+
+POST {{base}}/api/enrich/github
+Content-Type: application/json
+
+{
+  "owner": "facebook",
+  "name": "react"
+}
+
+### ─── POST /enrich/github (auth — uses GitHub API + AI) ───
+
+POST {{base}}/api/enrich/github
+Cookie: {{cookie}}
+Content-Type: application/json
+
+{
+  "owner": "vercel",
+  "name": "next.js"
+}
+
+### ─── POST /enrich/summary (auth only) ───
+
+POST {{base}}/api/enrich/summary
+Cookie: {{cookie}}
+Content-Type: application/json
+
+{
+  "owner": "facebook",
+  "name": "react"
+}
+
+### ─── POST /enrich/summary with readme ───
+
+POST {{base}}/api/enrich/summary
+Cookie: {{cookie}}
+Content-Type: application/json
+
+{
+  "owner": "facebook",
+  "name": "react",
+  "readme": "# React\nA JavaScript library for building user interfaces.\n\n## Features\n- Declarative\n- Component-Based\n- Learn Once, Write Anywhere"
+}
+
+### ─── POST /enrich/categorize (auth only) ───
+
+POST {{base}}/api/enrich/categorize
+Cookie: {{cookie}}
+Content-Type: application/json
+
+{
+  "summary": "React is a declarative JavaScript library for building user interfaces with reusable components.",
+  "topics": ["javascript", "frontend", "ui"],
+  "language": "JavaScript"
+}
+
+
+### ============================================
+### VALIDATION TESTS — expect 400 errors
+### ============================================
+
+### ─── Missing owner ───
+
+POST {{base}}/api/enrich/github
+Content-Type: application/json
+
+{
+  "name": "react"
+}
+
+### ─── Invalid owner (path traversal) ───
+
+POST {{base}}/api/enrich/github
+Content-Type: application/json
+
+{
+  "owner": "../etc",
+  "name": "passwd"
+}
+
+### ─── Owner too long ───
+
+POST {{base}}/api/enrich/github
+Content-Type: application/json
+
+{
+  "owner": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "name": "react"
+}
+
+### ─── Summary without auth (expect 401) ───
+
+POST {{base}}/api/enrich/summary
+Content-Type: application/json
+
+{
+  "owner": "facebook",
+  "name": "react"
+}
+
+### ─── Categorize with invalid topics type ───
+
+POST {{base}}/api/enrich/categorize
+Cookie: {{cookie}}
+Content-Type: application/json
+
+{
+  "summary": "A test library",
+  "topics": "not-an-array"
+}
+
+### ─── Categorize with object in topics ───
+
+POST {{base}}/api/enrich/categorize
+Cookie: {{cookie}}
+Content-Type: application/json
+
+{
+  "summary": "A test library",
+  "topics": ["ok", {"$gt": ""}]
+}

@@ -1,0 +1,92 @@
+### ============================================
+### Settings API — /api/settings
+### See AUTH.md for how to get a session cookie.
+### ============================================
+
+@base = http://localhost:5050
+@cookie = better-auth.session_token=PASTE_YOUR_TOKEN_HERE
+
+
+### ─── GET settings (creates default if none exist) ───
+
+GET {{base}}/api/settings
+Cookie: {{cookie}}
+
+### ─── PUT settings (partial update — merges, doesn't replace) ───
+
+PUT {{base}}/api/settings
+Cookie: {{cookie}}
+Content-Type: application/json
+
+{
+  "theme": "light",
+  "defaultView": "list"
+}
+
+### ─── PUT settings — toggle booleans ───
+
+PUT {{base}}/api/settings
+Cookie: {{cookie}}
+Content-Type: application/json
+
+{
+  "autoFetch": false,
+  "aiSummary": false,
+  "weeklyDigest": true
+}
+
+### ─── Verify merge — GET should show all keys ───
+
+GET {{base}}/api/settings
+Cookie: {{cookie}}
+
+
+### ============================================
+### VALIDATION TESTS — expect 400 errors
+### ============================================
+
+### ─── Object value (injection attempt) ───
+
+PUT {{base}}/api/settings
+Cookie: {{cookie}}
+Content-Type: application/json
+
+{
+  "theme": {"$gt": ""}
+}
+
+### ─── Array value ───
+
+PUT {{base}}/api/settings
+Cookie: {{cookie}}
+Content-Type: application/json
+
+{
+  "theme": [1, 2, 3]
+}
+
+### ─── String too long (> 200 chars) ───
+
+PUT {{base}}/api/settings
+Cookie: {{cookie}}
+Content-Type: application/json
+
+{
+  "theme": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+}
+
+### ─── Unknown keys stripped ───
+
+PUT {{base}}/api/settings
+Cookie: {{cookie}}
+Content-Type: application/json
+
+{
+  "theme": "dark",
+  "evil": "should-be-stripped",
+  "__proto__": {"admin": true}
+}
+
+### ─── No auth (expect 401) ───
+
+GET {{base}}/api/settings
