@@ -1,5 +1,3 @@
-const API = import.meta.env.VITE_API_URL || '';
-
 // Validate MongoDB ObjectId format to prevent path traversal
 const OBJECT_ID_RE = /^[a-f\d]{24}$/i;
 function assertId(id) {
@@ -15,7 +13,7 @@ function assertRepoParam(val, label) {
 }
 
 async function authFetch(path, options = {}) {
-  const res = await fetch(`${API}${path}`, {
+  const res = await fetch(path, {
     ...options,
     credentials: 'include',
     headers: {

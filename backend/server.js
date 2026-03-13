@@ -38,6 +38,7 @@ app.use(rateLimit({ windowMs: 60_000, max: 100, standardHeaders: true, legacyHea
 // Better Auth handles its own routes at /api/auth/*
 // Mount BEFORE express.json() middleware
 app.all('/api/auth/{*splat}', (req, res) => {
+  log.info('Auth route: ' + req.path);
   const auth = getAuth();
   return toNodeHandler(auth)(req, res);
 });
@@ -52,6 +53,7 @@ app.use('/api/enrich', enrichRoutes);
 // Health check — pings MongoDB to verify connectivity
 const healthCheck = async (req, res) => {
   try {
+    log.info('Health check');
     await mongoose.connection.db.admin().ping();
     res.json({ ok: true });
   } catch (err) {
