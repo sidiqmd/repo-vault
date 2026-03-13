@@ -7,7 +7,7 @@
 
 ### ─── Health check (no auth needed) ───
 
-GET {{base}}/health
+GET {{base}}/api/health
 
 ### ─── Auth session check ───
 ### Returns user info if cookie is valid

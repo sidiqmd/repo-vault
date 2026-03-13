@@ -80,6 +80,7 @@ let server;
 
 connectDB().then(() => {
   initAuth();
+  log.info(`Better Auth URL configured as: ${process.env.BETTER_AUTH_URL}`);
   server = app.listen(PORT, '0.0.0.0', () => log.info(`API running on :${PORT}`));
 }).catch(err => {
   log.fatal({ err }, 'Failed to connect to MongoDB');
