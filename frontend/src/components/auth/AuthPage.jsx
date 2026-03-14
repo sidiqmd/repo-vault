@@ -26,7 +26,7 @@ export default function AuthPage({ T, onSkip }) {
             { name: "GitHub", provider: "github", icon: Icons.github() },
             { name: "Google", provider: "google", icon: Icons.google() },
           ].map(p => (
-            <button key={p.name} onClick={() => handleSocial(p.provider)} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, width: "100%", padding: "11px", borderRadius: 10, border: `1.5px solid ${T.bdr}`, background: "transparent", color: T.ink, fontSize: "14px", fontWeight: 500, fontFamily: F.body, cursor: "pointer", marginBottom: 8, transition: "all 0.15s" }}
+            <button key={p.name} data-umami-event={`Auth: Login with ${p.name}`} onClick={() => handleSocial(p.provider)} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, width: "100%", padding: "11px", borderRadius: 10, border: `1.5px solid ${T.bdr}`, background: "transparent", color: T.ink, fontSize: "14px", fontWeight: 500, fontFamily: F.body, cursor: "pointer", marginBottom: 8, transition: "all 0.15s" }}
               onMouseEnter={e => { e.currentTarget.style.background = T.surfHov; e.currentTarget.style.borderColor = T.acc; }}
               onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = T.bdr; }}>
               {p.icon}<span>Continue with {p.name}</span>
@@ -35,7 +35,7 @@ export default function AuthPage({ T, onSkip }) {
           <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "16px 0" }}>
             <div style={{ flex: 1, height: 1, background: T.bdr }} /><span style={{ fontSize: "11px", color: T.inkF, fontFamily: F.mono }}>or</span><div style={{ flex: 1, height: 1, background: T.bdr }} />
           </div>
-          <button onClick={onSkip} style={{ width: "100%", padding: "11px", borderRadius: 10, border: `1.5px solid ${T.bdr}`, background: "transparent", color: T.inkM, fontSize: "14px", fontFamily: F.body, cursor: "pointer" }}
+          <button data-umami-event="Auth: Continue as Guest" onClick={onSkip} style={{ width: "100%", padding: "11px", borderRadius: 10, border: `1.5px solid ${T.bdr}`, background: "transparent", color: T.inkM, fontSize: "14px", fontFamily: F.body, cursor: "pointer" }}
             onMouseEnter={e => { e.currentTarget.style.borderColor = T.acc; e.currentTarget.style.color = T.ink; }}
             onMouseLeave={e => { e.currentTarget.style.borderColor = T.bdr; e.currentTarget.style.color = T.inkM; }}>
             Continue as guest

@@ -190,7 +190,7 @@ export default function VaultApp({ T, dark, setDark, user, isGuest, storage, onL
 
         {isGuest && <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12, padding: "8px 14px", background: T.accLt, border: `1px solid ${T.accBdr}`, borderRadius: 8, flexWrap: "wrap" }}>
           <span style={{ fontSize: "12px", color: T.ink, fontFamily: F.body, flex: 1, minWidth: 150 }}>Guest mode {"\u2014"} data in this browser only.</span>
-          <button onClick={onLogin} style={{ padding: "4px 12px", borderRadius: 5, border: "none", background: T.acc, color: "#fff", fontSize: "11px", fontFamily: F.body, fontWeight: 600, cursor: "pointer" }}>Sign in to sync</button>
+          <button data-umami-event="VaultApp: Sign in to sync" onClick={onLogin} style={{ padding: "4px 12px", borderRadius: 5, border: "none", background: T.acc, color: "#fff", fontSize: "11px", fontFamily: F.body, fontWeight: 600, cursor: "pointer" }}>Sign in to sync</button>
         </div>}
 
         {view === "kanban" ? (
@@ -216,7 +216,7 @@ export default function VaultApp({ T, dark, setDark, user, isGuest, storage, onL
         {filtered.length === 0 && <div style={{ textAlign: "center", padding: "50px 20px" }}><p style={{ fontFamily: F.display, fontSize: "22px", color: T.inkF }}>Nothing here</p></div>}
       </main>
 
-      <button onClick={() => setShowCap(true)} title="Add (N)" style={{ position: "fixed", bottom: 20, right: 20, zIndex: 90, width: 48, height: 48, borderRadius: 14, border: "none", background: T.acc, color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "24px", fontWeight: 300, lineHeight: 1, boxShadow: `0 6px 20px ${T.acc}55`, transition: "all 0.2s" }}
+      <button data-umami-event="VaultApp: Click Add Button" onClick={() => setShowCap(true)} title="Add (N)" style={{ position: "fixed", bottom: 20, right: 20, zIndex: 90, width: 48, height: 48, borderRadius: 14, border: "none", background: T.acc, color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "24px", fontWeight: 300, lineHeight: 1, boxShadow: `0 6px 20px ${T.acc}55`, transition: "all 0.2s" }}
         onMouseEnter={e => e.currentTarget.style.transform = "scale(1.08)"} onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}>+</button>
 
       <div style={{ position: "fixed", bottom: 24, left: 20, display: "flex", gap: 8, fontSize: "10px", color: T.inkF, fontFamily: F.mono, opacity: 0.4 }}>

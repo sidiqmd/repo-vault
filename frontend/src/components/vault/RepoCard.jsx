@@ -17,7 +17,7 @@ export default function RepoCard({ T, repo, density = "default", onClick }) {
   const enriching = repo._enriching;
 
   return (
-    <div onClick={onClick} style={{ background: T.surface, borderRadius: 11, cursor: "pointer", border: `1px solid ${T.bdr}`, overflow: "hidden", transition: "all 0.2s", boxShadow: `0 1px 3px ${T.shadow}`, opacity: enriching ? 0.75 : 1 }}
+    <div data-umami-event="RepoCard: Open Detail" onClick={onClick} style={{ background: T.surface, borderRadius: 11, cursor: "pointer", border: `1px solid ${T.bdr}`, overflow: "hidden", transition: "all 0.2s", boxShadow: `0 1px 3px ${T.shadow}`, opacity: enriching ? 0.75 : 1 }}
       onMouseEnter={e => { e.currentTarget.style.boxShadow = `0 8px 30px ${T.shadowHov}`; e.currentTarget.style.transform = "translateY(-2px)"; }}
       onMouseLeave={e => { e.currentTarget.style.boxShadow = `0 1px 3px ${T.shadow}`; e.currentTarget.style.transform = "translateY(0)"; }}>
       <div style={{ height: 3, background: enriching ? T.acc : st.color, ...(enriching ? { animation: "enrichPulse 1.5s ease-in-out infinite" } : {}) }} />

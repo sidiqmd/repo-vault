@@ -12,7 +12,7 @@ export default function KanbanColumn({ T, status, repos, onSelect }) {
       </div>
       <div style={{ padding: 5, overflowY: "auto", flex: 1, display: "flex", flexDirection: "column", gap: 5 }}>
         {repos.map(r => (
-          <div key={r.id} onClick={() => onSelect(r)} style={{ background: T.surface, border: `1px solid ${T.bdr}`, borderRadius: 7, padding: 10, cursor: "pointer", opacity: r._enriching ? 0.65 : 1 }}>
+          <div key={r.id} data-umami-event="Kanban: Select Repo" onClick={() => onSelect(r)} style={{ background: T.surface, border: `1px solid ${T.bdr}`, borderRadius: 7, padding: 10, cursor: "pointer", opacity: r._enriching ? 0.65 : 1 }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <div>
                 <p style={{ fontSize: "12px", fontWeight: 600, color: T.ink, fontFamily: F.body, margin: 0 }}>{r.name}</p>

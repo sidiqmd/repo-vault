@@ -27,17 +27,17 @@ export default function OnboardingGuide({ T, onClose }) {
         </div>
         <div style={{ padding: "0 28px 24px", display: "flex", gap: 8, justifyContent: "center" }}>
           {step > 0 && (
-            <button onClick={() => setStep(step - 1)} style={{ padding: "9px 20px", borderRadius: 8, border: `1.5px solid ${T.bdr}`, background: "transparent", color: T.inkM, fontSize: "13px", fontFamily: F.body, cursor: "pointer" }}>Back</button>
+            <button data-umami-event="Onboarding: Back" onClick={() => setStep(step - 1)} style={{ padding: "9px 20px", borderRadius: 8, border: `1.5px solid ${T.bdr}`, background: "transparent", color: T.inkM, fontSize: "13px", fontFamily: F.body, cursor: "pointer" }}>Back</button>
           )}
           {step < steps.length - 1 ? (
-            <button onClick={() => setStep(step + 1)} style={{ padding: "9px 24px", borderRadius: 8, border: "none", background: T.acc, color: "#fff", fontSize: "13px", fontFamily: F.body, fontWeight: 600, cursor: "pointer" }}>Next</button>
+            <button data-umami-event="Onboarding: Next" onClick={() => setStep(step + 1)} style={{ padding: "9px 24px", borderRadius: 8, border: "none", background: T.acc, color: "#fff", fontSize: "13px", fontFamily: F.body, fontWeight: 600, cursor: "pointer" }}>Next</button>
           ) : (
-            <button onClick={onClose} style={{ padding: "9px 24px", borderRadius: 8, border: "none", background: T.acc, color: "#fff", fontSize: "13px", fontFamily: F.body, fontWeight: 600, cursor: "pointer" }}>Start using RepoVault</button>
+            <button data-umami-event="Onboarding: Start" onClick={onClose} style={{ padding: "9px 24px", borderRadius: 8, border: "none", background: T.acc, color: "#fff", fontSize: "13px", fontFamily: F.body, fontWeight: 600, cursor: "pointer" }}>Start using RepoVault</button>
           )}
         </div>
         {step < steps.length - 1 && (
           <div style={{ textAlign: "center", paddingBottom: 16 }}>
-            <button onClick={onClose} style={{ background: "none", border: "none", color: T.inkF, fontSize: "12px", fontFamily: F.body, cursor: "pointer", padding: 4 }}>Skip tour</button>
+            <button data-umami-event="Onboarding: Skip" onClick={onClose} style={{ background: "none", border: "none", color: T.inkF, fontSize: "12px", fontFamily: F.body, cursor: "pointer", padding: 4 }}>Skip tour</button>
           </div>
         )}
       </div>

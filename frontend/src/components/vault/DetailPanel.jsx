@@ -75,7 +75,7 @@ export default function DetailPanel({ T, sel, setSel, repos, onUpdateRepo, onDel
             </div>
             <div style={{ display: "flex", gap: 5, flexShrink: 0 }}>
               <a href={`https://github.com/${sel.owner}/${sel.name}`} target="_blank" rel="noopener noreferrer" style={{ width: 28, height: 28, borderRadius: 7, border: `1px solid ${T.bdr}`, background: T.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", color: T.inkM, textDecoration: "none" }}>{"\u2197"}</a>
-              <button onClick={() => setSel(null)} style={{ width: 28, height: 28, borderRadius: 7, border: `1px solid ${T.bdr}`, background: T.bg, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px", color: T.inkM }}>{"\u2715"}</button>
+              <button data-umami-event="DetailPanel: Close" onClick={() => setSel(null)} style={{ width: 28, height: 28, borderRadius: 7, border: `1px solid ${T.bdr}`, background: T.bg, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px", color: T.inkM }}>{"\u2715"}</button>
             </div>
           </div>
 
@@ -91,18 +91,18 @@ export default function DetailPanel({ T, sel, setSel, repos, onUpdateRepo, onDel
           </div>
 
           <div style={{ display: "flex", gap: 6, marginBottom: 8, alignItems: "center" }}>
-            {prevSt && <button onClick={() => setStatus(prevSt.id)} style={{ padding: "4px 8px", borderRadius: 5, border: `1px solid ${T.bdr}`, background: "transparent", color: T.inkF, cursor: "pointer", fontSize: "10px", fontFamily: F.body }}>{"\u2190"} {prevSt.label}</button>}
+            {prevSt && <button data-umami-event="DetailPanel: Move Status Back" onClick={() => setStatus(prevSt.id)} style={{ padding: "4px 8px", borderRadius: 5, border: `1px solid ${T.bdr}`, background: "transparent", color: T.inkF, cursor: "pointer", fontSize: "10px", fontFamily: F.body }}>{"\u2190"} {prevSt.label}</button>}
             <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 3 }}>
               {STATUSES.map((s, i) => (
                 <div key={s.id} onClick={() => setStatus(s.id)} style={{ cursor: "pointer", width: stIdx >= i ? 14 : 7, height: 5, borderRadius: 3, background: stIdx >= i ? st.color : T.bdr, transition: "all 0.2s" }} title={s.label} />
               ))}
             </div>
-            {nextSt && <button onClick={() => setStatus(nextSt.id)} style={{ padding: "4px 8px", borderRadius: 5, border: "none", background: T.acc, color: "#fff", cursor: "pointer", fontSize: "10px", fontFamily: F.body, fontWeight: 600 }}>{nextSt.label} {"\u2192"}</button>}
+            {nextSt && <button data-umami-event="DetailPanel: Move Status Forward" onClick={() => setStatus(nextSt.id)} style={{ padding: "4px 8px", borderRadius: 5, border: "none", background: T.acc, color: "#fff", cursor: "pointer", fontSize: "10px", fontFamily: F.body, fontWeight: 600 }}>{nextSt.label} {"\u2192"}</button>}
           </div>
 
           <div style={{ display: "flex", gap: 4 }}>
-            <button onClick={() => setTab("overview")} style={tabBtn("overview")}>Overview</button>
-            <button onClick={() => setTab("readme")} style={tabBtn("readme")}>README</button>
+            <button data-umami-event="DetailPanel: Tab Overview" onClick={() => setTab("overview")} style={tabBtn("overview")}>Overview</button>
+            <button data-umami-event="DetailPanel: Tab README" onClick={() => setTab("readme")} style={tabBtn("readme")}>README</button>
           </div>
         </div>
 
@@ -198,7 +198,7 @@ export default function DetailPanel({ T, sel, setSel, repos, onUpdateRepo, onDel
             {/* Delete repo */}
             <div style={{ borderTop: `1px solid ${T.bdr}`, paddingTop: 14, marginTop: 6 }}>
               {!confirmDelete ? (
-                <button onClick={() => setConfirmDelete(true)} style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: 6, border: `1px solid #EF444433`, background: "transparent", color: "#EF4444", cursor: "pointer", fontSize: "11px", fontFamily: F.body, fontWeight: 500, transition: "all 0.15s" }}
+                <button data-umami-event="DetailPanel: Delete Repo Request" onClick={() => setConfirmDelete(true)} style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: 6, border: `1px solid #EF444433`, background: "transparent", color: "#EF4444", cursor: "pointer", fontSize: "11px", fontFamily: F.body, fontWeight: 500, transition: "all 0.15s" }}
                   onMouseEnter={e => { e.currentTarget.style.background = "#EF444410"; e.currentTarget.style.borderColor = "#EF4444"; }}
                   onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "#EF444433"; }}>
                   {"\u{1F5D1}"} Remove from vault
@@ -206,8 +206,8 @@ export default function DetailPanel({ T, sel, setSel, repos, onUpdateRepo, onDel
               ) : (
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <span style={{ fontSize: "12px", color: "#EF4444", fontFamily: F.body }}>Delete this repo?</span>
-                  <button onClick={handleDelete} style={{ padding: "5px 14px", borderRadius: 6, border: "none", background: "#EF4444", color: "#fff", cursor: "pointer", fontSize: "11px", fontFamily: F.body, fontWeight: 600 }}>Yes, delete</button>
-                  <button onClick={() => setConfirmDelete(false)} style={{ padding: "5px 14px", borderRadius: 6, border: `1px solid ${T.bdr}`, background: "transparent", color: T.inkM, cursor: "pointer", fontSize: "11px", fontFamily: F.body }}>Cancel</button>
+                  <button data-umami-event="DetailPanel: Confirm Delete Repo" onClick={handleDelete} style={{ padding: "5px 14px", borderRadius: 6, border: "none", background: "#EF4444", color: "#fff", cursor: "pointer", fontSize: "11px", fontFamily: F.body, fontWeight: 600 }}>Yes, delete</button>
+                  <button data-umami-event="DetailPanel: Cancel Delete Repo" onClick={() => setConfirmDelete(false)} style={{ padding: "5px 14px", borderRadius: 6, border: `1px solid ${T.bdr}`, background: "transparent", color: T.inkM, cursor: "pointer", fontSize: "11px", fontFamily: F.body }}>Cancel</button>
                 </div>
               )}
             </div>

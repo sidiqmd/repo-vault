@@ -9,7 +9,7 @@ export default function RepoListRow({ T, repo, onClick }) {
   const enriching = repo._enriching;
 
   return (
-    <tr onClick={onClick} style={{ cursor: "pointer", opacity: enriching ? 0.65 : 1 }}
+    <tr data-umami-event="RepoList: Open Detail" onClick={onClick} style={{ cursor: "pointer", opacity: enriching ? 0.65 : 1 }}
       onMouseEnter={e => e.currentTarget.style.background = T.surfHov}
       onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
       <td style={{ padding: "9px 10px", borderBottom: `1px solid ${T.bdrLt}` }}>

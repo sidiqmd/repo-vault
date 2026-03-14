@@ -28,11 +28,11 @@ export default function LandingPage({ T, dark, setDark, onStart, onLogin }) {
           </div>
           <div style={{ flex: 1 }} />
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            <button onClick={() => setDark(!dark)} title={dark ? "Light mode" : "Dark mode"} style={{ width: 36, height: 20, borderRadius: 10, border: "none", cursor: "pointer", background: dark ? T.acc : T.bdr, position: "relative", transition: "background 0.3s", display: "flex", alignItems: "center", padding: 2, flexShrink: 0 }}>
+            <button data-umami-event="Landing: Toggle Dark Mode" onClick={() => setDark(!dark)} title={dark ? "Light mode" : "Dark mode"} style={{ width: 36, height: 20, borderRadius: 10, border: "none", cursor: "pointer", background: dark ? T.acc : T.bdr, position: "relative", transition: "background 0.3s", display: "flex", alignItems: "center", padding: 2, flexShrink: 0 }}>
               <div style={{ width: 16, height: 16, borderRadius: "50%", background: T.surface, transition: "transform 0.3s", transform: dark ? "translateX(16px)" : "translateX(0)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "9px" }}>{dark ? "\u263D" : "\u2600"}</div>
             </button>
-            <button onClick={onLogin} style={{ padding: "7px 14px", borderRadius: 8, border: `1px solid ${T.bdr}`, background: "transparent", color: T.inkM, fontSize: "13px", fontFamily: F.body, cursor: "pointer" }}>Log in</button>
-            <button onClick={onStart} style={{ padding: "7px 14px", borderRadius: 8, border: "none", background: T.acc, color: "#fff", fontSize: "13px", fontFamily: F.body, cursor: "pointer", fontWeight: 600 }}>Start free</button>
+            <button data-umami-event="Landing: Log In Header" onClick={onLogin} style={{ padding: "7px 14px", borderRadius: 8, border: `1px solid ${T.bdr}`, background: "transparent", color: T.inkM, fontSize: "13px", fontFamily: F.body, cursor: "pointer" }}>Log in</button>
+            <button data-umami-event="Landing: Start Free Header" onClick={onStart} style={{ padding: "7px 14px", borderRadius: 8, border: "none", background: T.acc, color: "#fff", fontSize: "13px", fontFamily: F.body, cursor: "pointer", fontWeight: 600 }}>Start free</button>
           </div>
         </div>
       </nav>
@@ -50,8 +50,8 @@ export default function LandingPage({ T, dark, setDark, onStart, onLogin }) {
             Capture repos from anywhere, get AI summaries instantly, track what you've reviewed, and find anything in seconds. Built for developers who discover faster than they can read.
           </p>
           <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginBottom: 20 }}>
-            <button onClick={onStart} style={{ padding: "12px 24px", borderRadius: 10, border: "none", background: T.acc, color: "#fff", fontSize: "15px", fontFamily: F.body, fontWeight: 600, cursor: "pointer", boxShadow: `0 4px 20px ${T.acc}44` }}>Start free — no signup</button>
-            <button onClick={onLogin} style={{ padding: "12px 18px", borderRadius: 10, border: `1.5px solid ${T.bdr}`, background: "transparent", color: T.ink, fontSize: "14px", fontFamily: F.body, cursor: "pointer" }}>Sign in to sync</button>
+            <button data-umami-event="Landing: Start Free Hero" onClick={onStart} style={{ padding: "12px 24px", borderRadius: 10, border: "none", background: T.acc, color: "#fff", fontSize: "15px", fontFamily: F.body, fontWeight: 600, cursor: "pointer", boxShadow: `0 4px 20px ${T.acc}44` }}>Start free — no signup</button>
+            <button data-umami-event="Landing: Sign In Sync Hero" onClick={onLogin} style={{ padding: "12px 18px", borderRadius: 10, border: `1.5px solid ${T.bdr}`, background: "transparent", color: T.ink, fontSize: "14px", fontFamily: F.body, cursor: "pointer" }}>Sign in to sync</button>
           </div>
           <div style={{ display: "flex", gap: 16, fontSize: "12px", color: T.inkF, fontFamily: F.mono, flexWrap: "wrap" }}>
             <span>{"\u2713"} Free forever</span><span>{"\u2713"} No credit card</span><span>{"\u2713"} Works offline</span>
@@ -112,7 +112,7 @@ export default function LandingPage({ T, dark, setDark, onStart, onLogin }) {
                 <div key={f} style={{ display: "flex", gap: 6, fontSize: "13px", color: T.inkM, fontFamily: F.body }}><span style={{ color: "#4ADE80", flexShrink: 0 }}>{"\u2713"}</span>{f}</div>
               ))}
             </div>
-            <button onClick={onStart} style={{ width: "100%", padding: "10px", borderRadius: 8, border: "none", background: T.acc, color: "#fff", fontSize: "13px", fontFamily: F.body, fontWeight: 600, cursor: "pointer" }}>Start free</button>
+            <button data-umami-event="Landing: Start Free Card 1" onClick={onStart} style={{ width: "100%", padding: "10px", borderRadius: 8, border: "none", background: T.acc, color: "#fff", fontSize: "13px", fontFamily: F.body, fontWeight: 600, cursor: "pointer" }}>Start free</button>
           </div>
           {/* Pro */}
           <div style={{ background: T.surface, border: `1px solid ${T.bdr}`, borderRadius: 14, padding: "24px 20px", minWidth: 260, flex: "1 0 260px", scrollSnapAlign: "start", position: "relative", opacity: 0.65 }}>

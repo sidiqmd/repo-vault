@@ -95,7 +95,7 @@ export default function CaptureModal({ T, onClose, onAdd, onUpdateRepo, initialU
   return (
     <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 1100, background: T.overlayHeavy, backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
       <div onClick={e => e.stopPropagation()} style={{ background: T.surface, borderRadius: 14, width: "100%", maxWidth: 460, boxShadow: T.modalShadow, position: "relative" }}>
-        <button onClick={onClose} style={{ position: "absolute", top: 12, right: 12, width: 28, height: 28, borderRadius: 7, border: `1px solid ${T.bdr}`, background: T.bg, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px", color: T.inkM }}>{"\u2715"}</button>
+        <button data-umami-event="CaptureModal: Close" onClick={onClose} style={{ position: "absolute", top: 12, right: 12, width: 28, height: 28, borderRadius: 7, border: `1px solid ${T.bdr}`, background: T.bg, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px", color: T.inkM }}>{"\u2715"}</button>
         <div style={{ padding: 24 }}>
           <h2 style={{ fontFamily: F.display, fontSize: "24px", fontWeight: 400, color: T.ink, marginBottom: 14 }}>Add to vault</h2>
           <input
