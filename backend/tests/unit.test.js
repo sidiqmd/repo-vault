@@ -23,18 +23,14 @@ function eq(actual, expected, msg = '') {
   }
 }
 
-function deepEq(actual, expected) {
-  if (JSON.stringify(actual) !== JSON.stringify(expected)) {
-    throw new Error(`expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`);
-  }
-}
+
 
 function throws(fn, pattern) {
   let threw = false;
   try { fn(); } catch (e) {
     threw = true;
     if (pattern && !e.message.includes(pattern)) {
-      throw new Error(`expected error containing "${pattern}", got "${e.message}"`);
+      throw new Error(`expected error containing "${pattern}", got "${e.message}"`, { cause: e });
     }
   }
   if (!threw) throw new Error('expected to throw but did not');
@@ -150,7 +146,7 @@ test('rejects when content-length exceeds max', async () => {
     await safeText(res, 100);
   } catch (e) {
     threw = true;
-    if (!e.message.includes('too large')) throw new Error(`wrong error: ${e.message}`);
+    if (!e.message.includes('too large')) throw new Error(`wrong error: ${e.message}`, { cause: e });
   }
   if (!threw) throw new Error('expected to throw');
 });

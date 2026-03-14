@@ -7,7 +7,8 @@ import {
   repoSchema, repoCreateSchema, repoQuerySchema, bulkSchema, cacheSchema,
   repoParamSchema, parseBody, CACHED_FIELDS,
 } from '../validation.js';
-import log from '../config/logger.js';
+
+
 
 const router = Router();
 router.use(requireAuth);
@@ -99,7 +100,7 @@ router.post('/bulk', async (req, res) => {
   if (error) return;
 
   const repos = data.repos.map(r => ({ ...r, userId: req.user.id }));
-  let inserted = 0;
+  let inserted;
   try {
     const result = await Repo.insertMany(repos, { ordered: false });
     inserted = result.length;

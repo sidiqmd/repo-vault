@@ -41,7 +41,7 @@ export default function App() {
   // Redirect to landing when signed out and not in guest mode
   useEffect(() => {
     if (!isPending && !isSignedIn && !guestMode && page === "vault") {
-      setPage("landing");
+      setTimeout(() => setPage("landing"), 0);
     }
   }, [isPending, isSignedIn, guestMode, page]);
 

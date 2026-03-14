@@ -221,30 +221,32 @@ export default function DetailPanel({ T, sel, setSel, repos, onUpdateRepo, onDel
             <div style={{ background: T.bg, border: `1px solid ${T.bdrLt}`, borderRadius: 8, padding: "20px", wordBreak: "break-word", overflowY: "auto", flex: 1 }}>
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
+                /* eslint-disable no-unused-vars */
                 components={{
-                  h1: ({node, ...props}) => <h1 style={{ fontFamily: F.display, fontSize: "22px", fontWeight: 600, color: T.ink, margin: "0 0 16px 0", paddingBottom: 8, borderBottom: `1px solid ${T.bdrLt}` }} {...props} />,
-                  h2: ({node, ...props}) => <h2 style={{ fontFamily: F.display, fontSize: "18px", fontWeight: 600, color: T.ink, margin: "24px 0 12px 0", paddingBottom: 6, borderBottom: `1px solid ${T.bdrLt}` }} {...props} />,
-                  h3: ({node, ...props}) => <h3 style={{ fontFamily: F.display, fontSize: "15px", fontWeight: 600, color: T.ink, margin: "20px 0 10px 0" }} {...props} />,
-                  h4: ({node, ...props}) => <h4 style={{ fontFamily: F.body, fontSize: "14px", fontWeight: 600, color: T.ink, margin: "16px 0 8px 0" }} {...props} />,
-                  p: ({node, ...props}) => <p style={{ fontSize: "14px", color: T.inkM, fontFamily: F.body, lineHeight: 1.6, margin: "0 0 14px 0" }} {...props} />,
-                  a: ({node, ...props}) => <a style={{ color: T.acc, textDecoration: "none", fontWeight: 500 }} target="_blank" rel="noopener noreferrer" {...props} />,
-                  ul: ({node, ...props}) => <ul style={{ paddingLeft: 24, margin: "0 0 14px 0", color: T.inkM, fontSize: "14px", fontFamily: F.body, lineHeight: 1.6 }} {...props} />,
-                  ol: ({node, ...props}) => <ol style={{ paddingLeft: 24, margin: "0 0 14px 0", color: T.inkM, fontSize: "14px", fontFamily: F.body, lineHeight: 1.6 }} {...props} />,
-                  li: ({node, ...props}) => <li style={{ marginBottom: 4 }} {...props} />,
-                  blockquote: ({node, ...props}) => <blockquote style={{ borderLeft: `4px solid ${T.acc}`, paddingLeft: 16, margin: "0 0 14px 0", color: T.inkM, fontStyle: "italic", background: `${T.acc}08`, padding: "10px 16px", borderRadius: "0 6px 6px 0" }} {...props} />,
-                  code: ({node, inline, className, ...props}) => {
+                  h1: ({node: _, ...props}) => <h1 style={{ fontFamily: F.display, fontSize: "22px", fontWeight: 600, color: T.ink, margin: "0 0 16px 0", paddingBottom: 8, borderBottom: `1px solid ${T.bdrLt}` }} {...props} />,
+                  h2: ({node: _, ...props}) => <h2 style={{ fontFamily: F.display, fontSize: "18px", fontWeight: 600, color: T.ink, margin: "24px 0 12px 0", paddingBottom: 6, borderBottom: `1px solid ${T.bdrLt}` }} {...props} />,
+                  h3: ({node: _, ...props}) => <h3 style={{ fontFamily: F.display, fontSize: "15px", fontWeight: 600, color: T.ink, margin: "20px 0 10px 0" }} {...props} />,
+                  h4: ({node: _, ...props}) => <h4 style={{ fontFamily: F.body, fontSize: "14px", fontWeight: 600, color: T.ink, margin: "16px 0 8px 0" }} {...props} />,
+                  p: ({node: _, ...props}) => <p style={{ fontSize: "14px", color: T.inkM, fontFamily: F.body, lineHeight: 1.6, margin: "0 0 14px 0" }} {...props} />,
+                  a: ({node: _, ...props}) => <a style={{ color: T.acc, textDecoration: "none", fontWeight: 500 }} target="_blank" rel="noopener noreferrer" {...props} />,
+                  ul: ({node: _, ...props}) => <ul style={{ paddingLeft: 24, margin: "0 0 14px 0", color: T.inkM, fontSize: "14px", fontFamily: F.body, lineHeight: 1.6 }} {...props} />,
+                  ol: ({node: _, ...props}) => <ol style={{ paddingLeft: 24, margin: "0 0 14px 0", color: T.inkM, fontSize: "14px", fontFamily: F.body, lineHeight: 1.6 }} {...props} />,
+                  li: ({node: _, ...props}) => <li style={{ marginBottom: 4 }} {...props} />,
+                  blockquote: ({node: _, ...props}) => <blockquote style={{ borderLeft: `4px solid ${T.acc}`, paddingLeft: 16, margin: "0 0 14px 0", color: T.inkM, fontStyle: "italic", background: `${T.acc}08`, padding: "10px 16px", borderRadius: "0 6px 6px 0" }} {...props} />,
+                  code: ({node: _, inline, className, ...props}) => {
                     if (inline) {
                       return <code style={{ padding: "2px 6px", borderRadius: 4, background: `${T.acc}15`, border: `1px solid ${T.acc}30`, fontSize: "12px", fontFamily: F.mono, color: T.acc }} {...props} />
                     }
                     return <code style={{ display: "block", fontSize: "13px", fontFamily: F.mono, color: T.inkM, lineHeight: 1.5, whiteSpace: "pre-wrap" }} {...props} />
                   },
-                  pre: ({node, ...props}) => <pre style={{ background: T.bg, border: `1px solid ${T.bdr}`, borderRadius: 6, padding: "14px", overflowX: "auto", margin: "0 0 14px 0" }} {...props} />,
-                  img: ({node, ...props}) => <img style={{ maxWidth: "100%", borderRadius: 6, margin: "10px 0", border: `1px solid ${T.bdrLt}` }} loading="lazy" {...props} />,
-                  table: ({node, ...props}) => <div style={{ overflowX: "auto", margin: "0 0 16px 0" }}><table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px", fontFamily: F.body }} {...props} /></div>,
-                  th: ({node, ...props}) => <th style={{ padding: "8px 12px", textAlign: "left", fontWeight: 600, color: T.ink, borderBottom: `2px solid ${T.bdrLt}`, background: `${T.acc}05` }} {...props} />,
-                  td: ({node, ...props}) => <td style={{ padding: "8px 12px", color: T.inkM, borderBottom: `1px solid ${T.bdrLt}` }} {...props} />,
-                  hr: ({node, ...props}) => <hr style={{ border: "none", borderTop: `1px solid ${T.bdrLt}`, margin: "24px 0" }} {...props} />,
+                  pre: ({node: _, ...props}) => <pre style={{ background: T.bg, border: `1px solid ${T.bdr}`, borderRadius: 6, padding: "14px", overflowX: "auto", margin: "0 0 14px 0" }} {...props} />,
+                  img: ({node: _, ...props}) => <img style={{ maxWidth: "100%", borderRadius: 6, margin: "10px 0", border: `1px solid ${T.bdrLt}` }} loading="lazy" {...props} />,
+                  table: ({node: _, ...props}) => <div style={{ overflowX: "auto", margin: "0 0 16px 0" }}><table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px", fontFamily: F.body }} {...props} /></div>,
+                  th: ({node: _, ...props}) => <th style={{ padding: "8px 12px", textAlign: "left", fontWeight: 600, color: T.ink, borderBottom: `2px solid ${T.bdrLt}`, background: `${T.acc}05` }} {...props} />,
+                  td: ({node: _, ...props}) => <td style={{ padding: "8px 12px", color: T.inkM, borderBottom: `1px solid ${T.bdrLt}` }} {...props} />,
+                  hr: ({node: _, ...props}) => <hr style={{ border: "none", borderTop: `1px solid ${T.bdrLt}`, margin: "24px 0" }} {...props} />,
                 }}
+                /* eslint-enable no-unused-vars */
               >
                 {readmeText}
               </ReactMarkdown>

@@ -192,7 +192,7 @@ export { parseNum, decodeHtmlEntities, assertSafeParam, safeText };
 
 export async function enrichRepo(owner, name, { useApi = false } = {}) {
   let metadata;
-  let sparkline = [];
+  let sparkline;
 
   if (useApi) {
     // Fetch metadata first (needed), then sparkline + readme in parallel

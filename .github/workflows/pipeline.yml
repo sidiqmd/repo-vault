@@ -168,6 +168,8 @@ jobs:
           cache: "npm"
           cache-dependency-path: backend/package-lock.json
       - run: npm ci
+      - name: Lint code
+        run: npm run lint
       - name: Run tests
         run: npm test
 

@@ -56,7 +56,7 @@ const healthCheck = async (req, res) => {
     log.info('Health check');
     await mongoose.connection.db.admin().ping();
     res.json({ ok: true });
-  } catch (err) {
+  } catch {
     res.status(503).json({ ok: false, error: 'Database unavailable' });
   }
 };
