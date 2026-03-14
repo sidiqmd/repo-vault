@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { F } from "../../theme";
 import { CATEGORIES, STATUSES, TAG_PRESETS } from "../../constants";
 import { fmt, ago, langColor } from "../../utils";
 import Spark from "../common/Spark";
 
-export default function DetailPanel({ T, sel, setSel, repos, onUpdateRepo }) {
+export default function DetailPanel({ T, sel, setSel, repos, onUpdateRepo, onDeleteRepo }) {
   const [tab, setTab] = useState("overview");
   const [notes, setNotes] = useState(sel.notes || "");
   const [status, setStatus] = useState(sel.status);
@@ -13,6 +15,7 @@ export default function DetailPanel({ T, sel, setSel, repos, onUpdateRepo }) {
   const [tags, setTags] = useState(sel.tags || []);
   const [showTags, setShowTags] = useState(false);
   const [showNotes, setShowNotes] = useState(!!sel.notes);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const selIdRef = useRef(sel.id);
   useEffect(() => {
@@ -20,6 +23,7 @@ export default function DetailPanel({ T, sel, setSel, repos, onUpdateRepo }) {
     setTimeout(() => {
       setNotes(sel.notes || ""); setStatus(sel.status); setCategory(sel.category);
       setRating(sel.rating || 0); setTags(sel.tags || []); setShowNotes(!!sel.notes); setTab("overview");
+      setConfirmDelete(false);
     }, 0);
   }, [sel]);
 
@@ -49,68 +53,19 @@ export default function DetailPanel({ T, sel, setSel, repos, onUpdateRepo }) {
 
   const readmeText = sel.readme || `# ${sel.name}\n\n${sel.aiSummary}\n\n## Quick Start\n\nRefer to the GitHub repository for installation instructions and documentation.\n\n## Links\n\n- Repository: github.com/${sel.owner}/${sel.name}\n- License: ${sel.license}\n- Stars: ${fmt(sel.stars)}`;
 
-  // Simple markdown line renderer
-  const renderLine = (line, i) => {
-    if (line.startsWith("### ")) return <h3 key={i} style={{ fontFamily: F.display, fontSize: "15px", fontWeight: 600, color: T.ink, margin: "12px 0 4px" }}>{line.slice(4)}</h3>;
-    if (line.startsWith("## ")) return <h2 key={i} style={{ fontFamily: F.display, fontSize: "18px", fontWeight: 400, color: T.ink, margin: "14px 0 4px", borderBottom: `1px solid ${T.bdrLt}`, paddingBottom: 6 }}>{line.slice(3)}</h2>;
-    if (line.startsWith("# ")) return <h1 key={i} style={{ fontFamily: F.display, fontSize: "22px", fontWeight: 400, color: T.ink, margin: "16px 0 6px" }}>{line.slice(2)}</h1>;
-    if (line.startsWith("- ") || line.startsWith("* ")) return <li key={i} style={{ fontSize: "13px", color: T.inkM, fontFamily: F.body, lineHeight: 1.6, marginLeft: 16, marginBottom: 2 }}>{renderInline(line.slice(2))}</li>;
-    if (line.trim() === "") return <div key={i} style={{ height: 6 }} />;
-    return <p key={i} style={{ fontSize: "13px", color: T.inkM, fontFamily: F.body, lineHeight: 1.6, margin: "3px 0" }}>{renderInline(line)}</p>;
-  };
-
-  // Inline markdown: bold, code, links
-  const renderInline = (text) => {
-    const parts = [];
-    let remaining = text;
-    let key = 0;
-    const regex = /(\*\*(.+?)\*\*|`([^`]+)`|\[([^\]]+)\]\(([^)]+)\))/g;
-    let lastIndex = 0;
-    let match;
-    while ((match = regex.exec(text)) !== null) {
-      if (match.index > lastIndex) parts.push(<span key={key++}>{text.slice(lastIndex, match.index)}</span>);
-      if (match[2]) parts.push(<strong key={key++} style={{ fontWeight: 600, color: T.ink }}>{match[2]}</strong>);
-      else if (match[3]) parts.push(<code key={key++} style={{ padding: "1px 4px", borderRadius: 3, background: T.bg, border: `1px solid ${T.bdr}`, fontSize: "12px", fontFamily: F.mono }}>{match[3]}</code>);
-      else if (match[4] && match[5]) parts.push(<a key={key++} href={match[5]} target="_blank" rel="noopener noreferrer" style={{ color: T.acc, textDecoration: "none" }}>{match[4]}</a>);
-      lastIndex = match.index + match[0].length;
-    }
-    if (lastIndex < text.length) parts.push(<span key={key++}>{text.slice(lastIndex)}</span>);
-    return parts.length ? parts : text;
-  };
-
-  // Process readme into lines, handling code blocks
-  const renderReadme = (text) => {
-    const lines = text.split("\n");
-    const elements = [];
-    let inCode = false;
-    let codeLines = [];
-    let codeLang = "";
-    for (let i = 0; i < lines.length; i++) {
-      if (lines[i].startsWith("```") && !inCode) {
-        inCode = true;
-        codeLang = lines[i].slice(3).trim();
-        codeLines = [];
-      } else if (lines[i].startsWith("```") && inCode) {
-        inCode = false;
-        elements.push(
-          <pre key={`code-${i}`} style={{ background: T.bg, border: `1px solid ${T.bdr}`, borderRadius: 6, padding: "10px 12px", overflow: "auto", margin: "6px 0" }}>
-            <code style={{ fontSize: "12px", fontFamily: F.mono, color: T.inkM, lineHeight: 1.5 }}>{codeLines.join("\n")}</code>
-          </pre>
-        );
-      } else if (inCode) {
-        codeLines.push(lines[i]);
-      } else {
-        elements.push(renderLine(lines[i], i));
-      }
-    }
-    return elements;
-  };
+  // We now use react-markdown for robust rendering.
 
   const tabBtn = (id) => ({ padding: "7px 14px", borderRadius: "6px 6px 0 0", border: "none", cursor: "pointer", fontSize: "13px", fontWeight: tab === id ? 600 : 400, fontFamily: F.body, background: tab === id ? `${T.acc}18` : "transparent", color: tab === id ? T.acc : T.inkF, borderBottom: tab === id ? `2px solid ${T.acc}` : "2px solid transparent", transition: "all 0.15s", paddingBottom: 9 });
 
+  const handleDelete = () => {
+    if (onDeleteRepo) {
+      onDeleteRepo(sel._id || sel.id);
+    }
+  };
+
   return (
     <div onClick={() => setSel(null)} style={{ position: "fixed", inset: 0, zIndex: 1000, background: T.overlay, backdropFilter: "blur(3px)", display: "flex", justifyContent: "flex-end" }}>
-      <div onClick={e => e.stopPropagation()} style={{ width: "100%", maxWidth: 580, height: "100%", background: T.surface, borderLeft: `1px solid ${T.bdr}`, overflowY: "auto", boxShadow: T.panelShadow }}>
+      <div onClick={e => e.stopPropagation()} style={{ width: "100%", maxWidth: 580, height: "100%", background: T.surface, borderLeft: `1px solid ${T.bdr}`, overflowY: "auto", boxShadow: T.panelShadow, display: "flex", flexDirection: "column" }}>
 
         <div style={{ position: "sticky", top: 0, zIndex: 10, background: T.headerBg, backdropFilter: "blur(12px)", borderBottom: `1px solid ${T.bdrLt}`, padding: "14px 20px 0" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
@@ -151,7 +106,7 @@ export default function DetailPanel({ T, sel, setSel, repos, onUpdateRepo }) {
           </div>
         </div>
 
-        <div style={{ padding: "16px 20px" }}>
+        <div style={{ padding: "16px 20px", flex: 1 }}>
           {tab === "overview" && (<>
             <div style={{ background: T.accLt, border: `1px solid ${T.accBdr}`, borderRadius: 8, padding: "12px 14px", marginBottom: 14 }}>
               <p style={{ fontSize: "10px", fontWeight: 700, color: T.acc, fontFamily: F.mono, letterSpacing: "0.06em", marginBottom: 4 }}>AI SUMMARY</p>
@@ -219,7 +174,7 @@ export default function DetailPanel({ T, sel, setSel, repos, onUpdateRepo }) {
               {showNotes && <textarea value={notes} onChange={e => setNotes(e.target.value)} onBlur={saveNotes} placeholder="What's this for? When would you use it?" rows={3} style={{ width: "100%", padding: "8px 10px", borderRadius: 6, border: `1.5px solid ${T.bdr}`, background: T.bg, color: T.ink, fontSize: "12px", fontFamily: F.body, outline: "none", resize: "vertical", lineHeight: 1.6, boxSizing: "border-box" }} onFocus={e => e.target.style.borderColor = T.acc} />}
             </div>
 
-            {similar.length > 0 && (<div>
+            {similar.length > 0 && (<div style={{ marginBottom: 14 }}>
               <p style={{ fontSize: "10px", fontWeight: 700, color: T.inkF, fontFamily: F.mono, letterSpacing: "0.06em", marginBottom: 6 }}>RELATED IN YOUR VAULT</p>
               <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
                 {similar.map(r => {
@@ -239,15 +194,60 @@ export default function DetailPanel({ T, sel, setSel, repos, onUpdateRepo }) {
                 })}
               </div>
             </div>)}
+
+            {/* Delete repo */}
+            <div style={{ borderTop: `1px solid ${T.bdr}`, paddingTop: 14, marginTop: 6 }}>
+              {!confirmDelete ? (
+                <button onClick={() => setConfirmDelete(true)} style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: 6, border: `1px solid #EF444433`, background: "transparent", color: "#EF4444", cursor: "pointer", fontSize: "11px", fontFamily: F.body, fontWeight: 500, transition: "all 0.15s" }}
+                  onMouseEnter={e => { e.currentTarget.style.background = "#EF444410"; e.currentTarget.style.borderColor = "#EF4444"; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "#EF444433"; }}>
+                  {"\u{1F5D1}"} Remove from vault
+                </button>
+              ) : (
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ fontSize: "12px", color: "#EF4444", fontFamily: F.body }}>Delete this repo?</span>
+                  <button onClick={handleDelete} style={{ padding: "5px 14px", borderRadius: 6, border: "none", background: "#EF4444", color: "#fff", cursor: "pointer", fontSize: "11px", fontFamily: F.body, fontWeight: 600 }}>Yes, delete</button>
+                  <button onClick={() => setConfirmDelete(false)} style={{ padding: "5px 14px", borderRadius: 6, border: `1px solid ${T.bdr}`, background: "transparent", color: T.inkM, cursor: "pointer", fontSize: "11px", fontFamily: F.body }}>Cancel</button>
+                </div>
+              )}
+            </div>
           </>)}
 
-          {tab === "readme" && (<div>
+          {tab === "readme" && (<div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
               <p style={{ fontSize: "11px", color: T.inkF, fontFamily: F.mono }}>README.md</p>
               <a href={`https://github.com/${sel.owner}/${sel.name}#readme`} target="_blank" rel="noopener noreferrer" style={{ fontSize: "11px", color: T.acc, textDecoration: "none", fontFamily: F.mono }}>View on GitHub {"\u2197"}</a>
             </div>
-            <div style={{ background: T.bg, border: `1px solid ${T.bdrLt}`, borderRadius: 8, padding: "16px 18px" }}>
-              {renderReadme(readmeText)}
+            <div style={{ background: T.bg, border: `1px solid ${T.bdrLt}`, borderRadius: 8, padding: "20px", wordBreak: "break-word", overflowY: "auto", flex: 1 }}>
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  h1: ({node, ...props}) => <h1 style={{ fontFamily: F.display, fontSize: "22px", fontWeight: 600, color: T.ink, margin: "0 0 16px 0", paddingBottom: 8, borderBottom: `1px solid ${T.bdrLt}` }} {...props} />,
+                  h2: ({node, ...props}) => <h2 style={{ fontFamily: F.display, fontSize: "18px", fontWeight: 600, color: T.ink, margin: "24px 0 12px 0", paddingBottom: 6, borderBottom: `1px solid ${T.bdrLt}` }} {...props} />,
+                  h3: ({node, ...props}) => <h3 style={{ fontFamily: F.display, fontSize: "15px", fontWeight: 600, color: T.ink, margin: "20px 0 10px 0" }} {...props} />,
+                  h4: ({node, ...props}) => <h4 style={{ fontFamily: F.body, fontSize: "14px", fontWeight: 600, color: T.ink, margin: "16px 0 8px 0" }} {...props} />,
+                  p: ({node, ...props}) => <p style={{ fontSize: "14px", color: T.inkM, fontFamily: F.body, lineHeight: 1.6, margin: "0 0 14px 0" }} {...props} />,
+                  a: ({node, ...props}) => <a style={{ color: T.acc, textDecoration: "none", fontWeight: 500 }} target="_blank" rel="noopener noreferrer" {...props} />,
+                  ul: ({node, ...props}) => <ul style={{ paddingLeft: 24, margin: "0 0 14px 0", color: T.inkM, fontSize: "14px", fontFamily: F.body, lineHeight: 1.6 }} {...props} />,
+                  ol: ({node, ...props}) => <ol style={{ paddingLeft: 24, margin: "0 0 14px 0", color: T.inkM, fontSize: "14px", fontFamily: F.body, lineHeight: 1.6 }} {...props} />,
+                  li: ({node, ...props}) => <li style={{ marginBottom: 4 }} {...props} />,
+                  blockquote: ({node, ...props}) => <blockquote style={{ borderLeft: `4px solid ${T.acc}`, paddingLeft: 16, margin: "0 0 14px 0", color: T.inkM, fontStyle: "italic", background: `${T.acc}08`, padding: "10px 16px", borderRadius: "0 6px 6px 0" }} {...props} />,
+                  code: ({node, inline, className, ...props}) => {
+                    if (inline) {
+                      return <code style={{ padding: "2px 6px", borderRadius: 4, background: `${T.acc}15`, border: `1px solid ${T.acc}30`, fontSize: "12px", fontFamily: F.mono, color: T.acc }} {...props} />
+                    }
+                    return <code style={{ display: "block", fontSize: "13px", fontFamily: F.mono, color: T.inkM, lineHeight: 1.5, whiteSpace: "pre-wrap" }} {...props} />
+                  },
+                  pre: ({node, ...props}) => <pre style={{ background: T.bg, border: `1px solid ${T.bdr}`, borderRadius: 6, padding: "14px", overflowX: "auto", margin: "0 0 14px 0" }} {...props} />,
+                  img: ({node, ...props}) => <img style={{ maxWidth: "100%", borderRadius: 6, margin: "10px 0", border: `1px solid ${T.bdrLt}` }} loading="lazy" {...props} />,
+                  table: ({node, ...props}) => <div style={{ overflowX: "auto", margin: "0 0 16px 0" }}><table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px", fontFamily: F.body }} {...props} /></div>,
+                  th: ({node, ...props}) => <th style={{ padding: "8px 12px", textAlign: "left", fontWeight: 600, color: T.ink, borderBottom: `2px solid ${T.bdrLt}`, background: `${T.acc}05` }} {...props} />,
+                  td: ({node, ...props}) => <td style={{ padding: "8px 12px", color: T.inkM, borderBottom: `1px solid ${T.bdrLt}` }} {...props} />,
+                  hr: ({node, ...props}) => <hr style={{ border: "none", borderTop: `1px solid ${T.bdrLt}`, margin: "24px 0" }} {...props} />,
+                }}
+              >
+                {readmeText}
+              </ReactMarkdown>
             </div>
           </div>)}
         </div>
